@@ -1,0 +1,11 @@
+{
+  "client_id": "511828570984-fuprh0cm7665emlne3rnf9pk34kkn86s.apps.googleusercontent.com",
+  "redirect_uri": "com.google.codelabs.appauth:/oauth2callback",
+  "authorization_scope": "profile",
+  "discovery_uri": "",
+  "authorization_endpoint_uri": "https://accounts.google.com/o/oauth2/v2/auth",
+  "token_endpoint_uri": "https://www.googleapis.com/oauth2/v4/token",
+  "registration_endpoint_uri": "",
+  "user_info_endpoint_uri": "https://www.googleapis.com/oauth2/v3/userinfo",
+  "https_required": true
+}
