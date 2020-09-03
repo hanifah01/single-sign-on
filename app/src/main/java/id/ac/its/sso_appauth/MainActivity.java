@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
     AuthState mAuthState;
 
     private static String TAG = "appauthlog";
-    public static String MY_CLIENT_ID = "511828570984-fuprh0cm7665emlne3rnf9pk34kkn86s.apps.googleusercontent.com";
-    public static Uri MY_REDIRECT_URI = Uri.parse("com.google.codelabs.appauth:/oauth2callback");
+    public static String MY_CLIENT_ID = "FAB93E43-0B61-49F8-8E04-8571AF3AAB43";
+    public static Uri MY_REDIRECT_URI = Uri.parse("id.ac.its.my.wali:/oauth2callback");
 
 
     @Override
@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
     private void doAuthorization() {
         AuthorizationServiceConfiguration serviceConfig =
                 new AuthorizationServiceConfiguration(
-                        Uri.parse("https://accounts.google.com/o/oauth2/v2/auth"), // authorization endpoint
-                        Uri.parse("https://www.googleapis.com/oauth2/v4/token")// token endpoint
+                        Uri.parse("https://my.its.ac.id/signin"), // authorization endpoint
+                        Uri.parse("https://my.its.ac.id/token")// token endpoint
                 );
 
         AuthorizationRequest.Builder authRequestBuilder =
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                         MY_REDIRECT_URI); // the redirect URI to which the auth response is sent
 
         AuthorizationRequest authRequest = authRequestBuilder
-                .setScope("profile")
+                .setScope("openid profile")
                 .build();
 
         AuthorizationService authService = new AuthorizationService(this);
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
         protected JSONObject doInBackground(String... tokens) {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("https://www.googleapis.com/oauth2/v3/userinfo")
+                    .url("https://my.its.ac.id/userinfo")
                     .addHeader("Authorization", String.format("Bearer %s", tokens[0]))
                     .build();
 
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(userInfo);
             if(userInfo!=null){
                 Log.d(TAG, "user info available: ");
-                String fullName = userInfo.optString("name", null);
-                Log.d(TAG, "user info name: " + fullName);
+                String phonenumber = userInfo.optString("preferred_username", null);
+                Log.d(TAG, "user info name: " + phonenumber);
             }
             else {
                 Log.d(TAG, "user info null ");

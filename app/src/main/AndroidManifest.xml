@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="com.google.codelabs.appauth" />
+                <data android:scheme="id.ac.its.my.wali" />
             </intent-filter>
         </activity>
     </application>
