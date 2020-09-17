@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="id.ac.its.my.wali" />
+                <data android:scheme="id.ac.its.my.courier" />
             </intent-filter>
         </activity>
     </application>

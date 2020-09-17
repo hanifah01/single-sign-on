@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
@@ -45,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
     AuthState mAuthState;
 
     private static String TAG = "appauthlog";
-    public static String MY_CLIENT_ID = "FAB93E43-0B61-49F8-8E04-8571AF3AAB43";
-    public static Uri MY_REDIRECT_URI = Uri.parse("id.ac.its.my.wali:/oauth2callback");
+    public static String MY_CLIENT_ID = "BD13563E-6550-4A1D-9DE0-0A9BB1593D65";
+    public static Uri MY_REDIRECT_URI = Uri.parse("id.ac.its.my.courier:/oauth2callback");
 
 
     @Override
@@ -60,16 +61,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         mAuthService = new AuthorizationService(this);
-        mStateManager = new AuthStateManager(this);
+        //mStateManager = new AuthStateManager(this);
+        mStateManager= AuthStateManager.getInstance(this);
 
         if(mStateManager.getCurrent().isAuthorized()){
             Log.d(TAG, "Done");
-            button_login.setText("Logout");
-            //msh ada lanjutannya
+            button_login.setText("Sudah login");
             mStateManager.getCurrent().performActionWithFreshTokens(mAuthService, new AuthState.AuthStateAction() {
                 @Override
                 public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException ex) {
-                    new ProfileTask().execute(accessToken);
+                    if (accessToken!=null){
+                        Log.d(TAG, "Access token " + accessToken);
+                        new ProfileTask().execute(accessToken);
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Sesi berakhir, harap melakukan login lagi", Toast.LENGTH_LONG).show();
+                    }
+
                 }
             });
         }
@@ -77,12 +85,7 @@ public class MainActivity extends AppCompatActivity {
         button_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mStateManager.getCurrent().isAuthorized()){
-
-                }
-                else {
-                    doAuthorization();
-                }
+                doAuthorization();
             }
         });
 
@@ -97,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
     private void doAuthorization() {
         AuthorizationServiceConfiguration serviceConfig =
                 new AuthorizationServiceConfiguration(
-                        Uri.parse("https://my.its.ac.id/signin"), // authorization endpoint
-                        Uri.parse("https://my.its.ac.id/token")// token endpoint
+                        Uri.parse("https://dev-my.its.ac.id/authorize"), // authorization endpoint
+                        Uri.parse("https://dev-my.its.ac.id/token")// token endpoint
                 );
 
         AuthorizationRequest.Builder authRequestBuilder =
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                         MY_REDIRECT_URI); // the redirect URI to which the auth response is sent
 
         AuthorizationRequest authRequest = authRequestBuilder
-                .setScope("openid profile")
+                .setScope("profile openid")
                 .build();
 
         AuthorizationService authService = new AuthorizationService(this);
@@ -126,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
             AuthorizationException ex = AuthorizationException.fromIntent(data);
             // ... process the response or exception ...
             if (resp != null) {
-                mAuthService = new AuthorizationService(this);
+                //mAuthService = new AuthorizationService(this);
                 mStateManager.updateAfterAuthorization(resp,ex);
 
                 //Exchanging the authorization code
@@ -136,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                             @Override public void onTokenRequestCompleted(
                                     TokenResponse resp, AuthorizationException ex) {
                                 if (resp != null) {
-                                    // exchange succeeded
+
                                     mStateManager.updateAfterTokenResponse(resp,ex);
-                                    Log.d(TAG, resp.accessToken);
+                                    Log.d(TAG, "Access token " + resp.accessToken);
                                     button_login.setText("Berhasil login");
                                     new ProfileTask().execute(resp.accessToken);
                                 } else {
@@ -157,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (mStateManager.getCurrent().isAuthorized()){
             Log.d(TAG, "Done");
-            button_login.setText("Logout");
+            button_login.setText("is authorized");
             mStateManager.getCurrent().performActionWithFreshTokens(mAuthService, new AuthState.AuthStateAction() {
                 @Override
                 public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException ex) {
-                    //kkkkkkkk
+                    Log.d(TAG, "Access token " + accessToken);
                     new ProfileTask().execute(accessToken);
                 }
             });
@@ -173,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         protected JSONObject doInBackground(String... tokens) {
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("https://my.its.ac.id/userinfo")
+                    .url("https://dev-my.its.ac.id/userinfo")
                     .addHeader("Authorization", String.format("Bearer %s", tokens[0]))
                     .build();
 
@@ -214,9 +217,11 @@ public class MainActivity extends AppCompatActivity {
         }
         mStateManager.replace(clearedState);
 
-        Intent mainIntent = new Intent(this, MainActivity2.class);
+        Toast.makeText(MainActivity.this, "LOGOUT", Toast.LENGTH_LONG).show();
+        button_login.setText("login");
+        /*Intent mainIntent = new Intent(this, MainActivity2.class);
         mainIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(mainIntent);
-        finish();
+        finish();*/
     }
 }
